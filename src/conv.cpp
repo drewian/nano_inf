@@ -24,7 +24,28 @@ void ConvolutionalLayer::updateWeights(const std::vector<double> &weightValues) 
 }
 
 Tensor3D ConvolutionalLayer::getOutput(const Tensor3D &input) const {
+    // This is a 3D convolution, see right side of
+    // https://www.researchgate.net/figure/a-2D-CONV-on-3D-input-The-filter-moves-only-in-two-directions-height-and-width-of-the_fig1_348805304
+    // for an illustration.
     DimsData prevLayerDims = input.getDims();
-        // weights{numLayers, prevLayerDims[1] / stepSize - kernelSize, prevLayerDims[2] / stepSize - kernelSize} {
+    DimsData weightDims = weights.getDims();
+    Tensor3D outp{numLayers, prevLayerDims[1] / stepSize - kernelSize, prevLayerDims[2] / stepSize - kernelSize};
+    for (size_t depth = 0; depth < prevLayerDims[0]; depth+= stepSize) {
+        for (size_t width = 0; width < prevLayerDims[1]; width += stepSize) {
+            for (size_t height = 0; height < prevLayerDims[2]; height += stepSize) {
+                double sum = 0;
+                // start iterating over the weight-tensor.
+                for (size_t i = 0; i < weightDims[0]; i++) {
+                    for (size_t j = 0; j < weightDims[1]; j++) {
+                        for (size_t k = 0; k < weightDims[2]; k++) {
+                            sum += input.at(depth+i, width+j, height+k) * weights.at(i, j, k);
+                        }
+                    }
+                }
+                outp.at(depth, width, height) = activationFunction(sum);
+            }
+        }
+    }
+    return outp;
 }
 
