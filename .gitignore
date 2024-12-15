@@ -1,0 +1,6 @@
+.idea/*
+.vs/*
+.vscode/*
+cmake-build-debug-visual-studio
+*.swp
+*.user
