@@ -12,21 +12,26 @@ FullyConnectedLayer::FullyConnectedLayer(
 
 }
 
-void FullyConnectedLayer::updateWeights(const std::vector<std::vector<double> > &weightValues) {
-    // TODO: Verify dimensions
+void FullyConnectedLayer::updateWeights(const std::vector<double> &weightValues) const {
     for (size_t i = 0; i < noutput; i++) {
-        for (size_t j = 0; j < ninput; j++)
-            weights.set(i, j, weightValues.at(i).at(j));
+        for (size_t j = 0; j < ninput; j++) {
+            weights.at(i, j) = weightValues.at(i * noutput + j);
+        }
     }
 }
 
 
 Tensor3D FullyConnectedLayer::getOutput(const Tensor3D &input) const {
-    auto result = (weights * input);
-    const TensorData data = result.getData();
-    Tensor3D output{noutput, 1};
-    for (size_t i = 0; i < noutput; i++)
-        output.set(i, 0, activationFunction(data[i][0]));
-    return output;
+    // We assume a tensor with the input dimension <1, ninput, 1> (so a vector).
+    // During the construction of the NN transpose layers will be injected to assure the corrected dimensions.
+    Tensor3D outp{noutput, 1}; // TODO: Inefficient, outp-space could be pre-allocated during the NN-construction process.
+    for (size_t i = 0; i < noutput; i++) {
+        double sum = 0;
+        for (size_t j = 0; j < ninput; j++) {
+            sum += weights.at(i, j) * input.at(j, 0);
+        }
+        outp.at(i, 0) = activationFunction(sum);
+    }
+    return outp;
 }
 
