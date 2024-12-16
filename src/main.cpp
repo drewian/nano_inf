@@ -3,44 +3,25 @@
 
 
 #include "activations.hpp"
-#include "fnn.hpp"
 #include "matrix.hpp"
+#include "nnbuilder.hpp"
 
-using namespace std;
 
+using namespace ninf;
 
-int main()
-{
-    cout << "Hello World!" << endl;
-    ninf::Tensor3D m({
-        {1, 2, -3},
-        {4, -5, -6},
-        {7, 8, 9}
-    });
-    ninf::Tensor3D vec({
-        {2},
-        {2},
-        {2}
-    });
-    ninf::Tensor3D output = relu(m * vec);
+int main() {
 
-    std::vector<std::vector<double>> weightsFirstLayer = {
-        {1, 2, 3},
-        {4, 5, 6},
-    };
+    NNBuilder nnBuilder{DimsData {3, 100, 100}};
+    NeuralNetwork nn = nnBuilder
+        .addConv2DLayer(10, 10, 10, relu)
+        .addConv2DLayer(10, 1, 50, relu)
+        .addFCLayer(10, 50, relu)
+        .addFCLayer(3, 10, relu)
+        .build();
 
-    std::vector<std::vector<double>> weightsSecondLayer = {
-        {0.5, 0.5},
-        {0.5, 0.5},
-    };
-
-    ninf::FullyConnectedLayer fst{weightsFirstLayer.size(), weightsFirstLayer.at(0).size(), ninf::relu};
-    fst.updateWeights(weightsFirstLayer);
-    ninf::FullyConnectedLayer snd{weightsSecondLayer.size(), weightsSecondLayer.at(0).size(), ninf::relu};
-    snd.updateWeights(weightsSecondLayer);
-
-    auto o1 = fst.getOutput(vec);
-    auto o2 = snd.getOutput(o1);
-
+    auto inp = Tensor3D{3, 100, 100};
+    auto outp = nn.get(inp);
+    outp = nn.getVerbose(inp);
+    auto activations = nn.getActivations();
     return 0;
 }

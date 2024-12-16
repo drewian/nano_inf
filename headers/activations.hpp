@@ -1,13 +1,10 @@
-//
-// Created by Anton on 08/12/2024.
-//
-
 #ifndef ACTIVATIONS_HPP
 #define ACTIVATIONS_HPP
 
-namespace ninf {
+#define ACTIV_FUNC_SIG double (*)(double)
 
-double relu(double val) {
+namespace ninf {
+    inline double relu(double val) {
     return val < 0 ? 0 : val;
 }
 

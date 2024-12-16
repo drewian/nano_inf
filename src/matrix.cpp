@@ -10,17 +10,38 @@ Tensor3D::Tensor3D(size_t nrows, size_t ncols)
     : Tensor3D{1, nrows, ncols} {
 }
 
-Tensor3D::Tensor3D(size_t ndepth, size_t nrows, size_t ncols)
-    : data{nullptr}, dims{ndepth, nrows, ncols}, transposeMapping{0, 1, 2} {
-    data = new double**[ndepth];
-    for (size_t i = 0; i < ndepth; i++) {
-        data[i] = new double*[nrows];
-        for (size_t j = 0; j < nrows; j++) {
-            data[i][j] = new double[ncols];
-            for (size_t k = 0; k < ncols; k++)
+void Tensor3D::allocateData(const DimsData &dimsForAllocation) {
+    data = new double**[dimsForAllocation[0]];
+    for (size_t i = 0; i < dimsForAllocation[0]; i++) {
+        data[i] = new double*[dimsForAllocation[1]];
+        for (size_t j = 0; j < dimsForAllocation[1]; j++) {
+            data[i][j] = new double[dimsForAllocation[2]];
+            for (size_t k = 0; k < dimsForAllocation[2]; k++)
                 data[i][j][k] = 0;
         }
     }
+}
+
+Tensor3D::Tensor3D(size_t ndepth, size_t nrows, size_t ncols)
+    : data{nullptr}, dims{ndepth, nrows, ncols}, transposeMapping{0, 1, 2} {
+    allocateData(dims);
+}
+
+Tensor3D::Tensor3D(const Tensor3D &t)
+    : data{nullptr}, dims{t.getDims()}, transposeMapping{0, 1, 2} {
+    const DimsData dimsForAllocation = getDims(); // get original dims, in case they were transposed.
+    transpose(t.getTranspose());
+    allocateData(dimsForAllocation);
+}
+
+Tensor3D &Tensor3D::operator=(const Tensor3D &t) {
+    deleteData();
+    dims = t.getDims();
+    transposeMapping = {0, 1, 2};
+    const DimsData dimsForAllocation = getDims();
+    transposeMapping = t.getTranspose();
+    allocateData(dimsForAllocation);
+    return *this;
 }
 
 DimsData Tensor3D::getDims() const {
@@ -31,17 +52,22 @@ DimsData Tensor3D::getDims() const {
     };
 }
 
-Tensor3D::~Tensor3D() {
+void Tensor3D::deleteData() const {
     for (size_t i = 0; i < dims[0]; i++) {
         for (size_t j = 0; j < dims[1]; j++) {
             delete[] data[i][j];
         }
+        delete[] data[i];
     }
     delete[] data;
 }
 
+Tensor3D::~Tensor3D() {
+    deleteData();
+}
+
 double& Tensor3D::at(const size_t i, const size_t j) const {
-    return at(1, i, j);
+    return at(0, i, j);
 }
 
 double& Tensor3D::at(const size_t i, const size_t j, const size_t k) const {
@@ -51,7 +77,7 @@ double& Tensor3D::at(const size_t i, const size_t j, const size_t k) const {
         [(transposeMapping[2] == 0) * i + (transposeMapping[2] == 1) * j + (transposeMapping[2] == 2) * k];
 }
 
-void Tensor3D::transpose(const std::array<size_t, 3> &transposeMapping) {
+void Tensor3D::transpose(const DimsData &transposeMapping) {
     this->transposeMapping = transposeMapping;
 }
 

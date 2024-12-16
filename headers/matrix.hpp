@@ -15,16 +15,23 @@ namespace ninf {
     public:
         Tensor3D(size_t, size_t);
         Tensor3D(size_t, size_t, size_t);
+        Tensor3D(const Tensor3D&);
+        Tensor3D& operator=(const Tensor3D&);
         ~Tensor3D();
         // TODO: overload bracket operator (or maybe not, implementation could be ugly if both 2D & 3D access should be supported).
-        double& at(size_t, size_t) const;
-        double& at(size_t, size_t, size_t) const;
-        void transpose(const std::array<size_t, 3>&);
+        [[nodiscard]] double& at(size_t, size_t) const;
+        [[nodiscard]] double& at(size_t, size_t, size_t) const;
+        void transpose(const DimsData&);
         [[nodiscard]] DimsData getDims() const;
+        [[nodiscard]] DimsData getTranspose() const {
+            return transposeMapping;
+        };
     private:
         TensorData data;
         DimsData dims;
         DimsData transposeMapping;
+        void deleteData() const;
+        void allocateData(const DimsData&);
     };
 }
 

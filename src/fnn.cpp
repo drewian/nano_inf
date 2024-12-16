@@ -20,10 +20,9 @@ void FullyConnectedLayer::updateWeights(const std::vector<double> &weightValues)
     }
 }
 
-
-Tensor3D FullyConnectedLayer::getOutput(const Tensor3D &input) const {
+Tensor3D FullyConnectedLayer::getOutput(const Tensor3D &input) {
     // We assume a tensor with the input dimension <1, ninput, 1> (so a vector).
-    // During the construction of the NN transpose layers will be injected to assure the corrected dimensions.
+    // During the construction of the NN, a transpose()-call will be injected to assure the corrected dimensions.
     Tensor3D outp{noutput, 1}; // TODO: Inefficient, outp-space could be pre-allocated during the NN-construction process.
     for (size_t i = 0; i < noutput; i++) {
         double sum = 0;
