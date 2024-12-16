@@ -6,21 +6,9 @@
 #include "activations.hpp"
 #include "matrix.hpp"
 #include "nnbuilder.hpp"
-#include "onnx.pb.h"
 
 
 using namespace ninf;
-
-
-onnx::GraphProto buildGraph() {
-    std::ifstream input(
-        R"(C:\Users\Anton\Documents\repos\notebooks\simple_model.onnx)",
-        std::ios::in | std::ios::binary); // Open file
-    onnx::ModelProto model;
-    model.ParseFromIstream(&input); // parse file
-    onnx::GraphProto graph = model.graph(); // the gragh
-    return graph;
-}
 
 int main() {
 
@@ -36,6 +24,5 @@ int main() {
     auto outp = nn.get(inp);
     outp = nn.getVerbose(inp);
     auto activations = nn.getActivations();
-    auto graph = buildGraph();
     return 0;
 }

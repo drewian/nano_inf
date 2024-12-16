@@ -8,6 +8,5 @@ add_executable(nano_inf main.cpp matrix.cpp
         ../headers/nn.hpp
         nn.cpp
         nnbuilder.cpp
-        onnx.pb.cc
 )
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/headers)

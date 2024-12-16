@@ -15,7 +15,7 @@ add_subdirectory(headers)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/headers)
 # target_link_libraries(${PROJECT_NAME} PRIVATE protobuf)
 # target_link_libraries(${PROJECT_NAME} PRIVATE ${PROTOBUF_LIBRARY})
-target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
+# target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
 
 include(GNUInstallDirs)
 install(TARGETS nano_inf
