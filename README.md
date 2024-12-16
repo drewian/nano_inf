@@ -51,15 +51,6 @@ int main() {
 
 ```
 
-#### Custom Tensors
-
-The `Tensor3D` class is used to manage layer weights and inputs. It provides a simple interface for creating and manipulating 3D tensors.
-
-```cpp
-Tensor3D tensor(1, 28, 28); // Create a tensor with dimensions 1x28x28
-tensor.fill(0.5);           // Fill the tensor with a constant value
-```
-
 ## Roadmap
 
 - **ONNX Support**: Add support for loading ONNX models, enabling compatibility with popular frameworks like PyTorch and TensorFlow.
